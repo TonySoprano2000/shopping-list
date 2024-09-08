@@ -4,7 +4,7 @@ const itemInput = document.getElementById("item-input");
 const itemFilter = document.getElementById("filter");
 const clearBtn = document.getElementById("clear");
 
-function addItem(e) {
+function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
   if (newItem === "") {
@@ -12,17 +12,39 @@ function addItem(e) {
     alert("Please add item");
     return;
   }
+  // Create Item DOM element
+  addItemToDOM(newItem);
+  // Add item to local storage
+  addItemToStorage(newItem);
+
+  // Check Ui
+  checkUI();
+  itemInput.value = "";
+}
+
+function addItemToStorage(item) {
+  let itemFromStorage;
+
+  if (localStorage.getItem("items") === null) {
+    itemFromStorage = [];
+  } else {
+    itemFromStorage = JSON.parse(localStorage.getItem("items"));
+  }
+  // Add new item to array
+  itemFromStorage.push(item);
+  //Convert to the JSON string and set to local storage
+  localStorage.setItem("item", JSON.stringify(itemFromStorage));
+}
+
+function addItemToDOM(item) {
   // Create ListItem
   const li = document.createElement("li");
-  li.appendChild(document.createTextNode(newItem));
+  li.appendChild(document.createTextNode(item));
   const button = createButton("remove-item btn-link text-red"); // Ovo je classes i to prosledjujes u funkciju
   // Icon vezujes za button u funkciji gde pravis dugme
   li.appendChild(button);
   // Add li to the DOM
   itemList.appendChild(li);
-  // Check Ui
-  checkUI();
-  itemInput.value = "";
 }
 
 function createButton(classes) {
@@ -94,7 +116,7 @@ function checkUI() {
   }
 }
 // Event Listener
-itemForm.addEventListener("submit", addItem);
+itemForm.addEventListener("submit", onAddItemSubmit);
 itemList.addEventListener("click", removeItem);
 clearBtn.addEventListener("click", clearItems);
 itemFilter.addEventListener("input", FilterItems);
