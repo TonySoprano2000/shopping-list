@@ -66,15 +66,18 @@ function clearItems() {
 }
 
 function FilterItems(e) {
-  const items = itemList.querySelectorAll("li");
-  const text = e.target.value.toLowerCase();
+  const items = itemList.querySelectorAll("li"); // Pronalazi sve <li> elemente u listi
+  const text = e.target.value.toLowerCase(); // Uzima vrednost iz input polja i pretvara je u mala slova
   items.forEach((item) => {
-    const itemName = item.firstChild.textContent.toLowerCase();
+    // Iterira kroz svaki <li> element
+    const itemName = item.firstChild.textContent.toLowerCase(); // Uzima tekst iz <li> elementa i pretvara ga u mala slova
     for (const letter of text) {
+      // Iterira kroz svaki karakter u tekstu iz input polja
       if (itemName.includes(letter)) {
-        item.style.display = "flex";
+        // Proverava da li ime stavke sadrži karakter iz input polja
+        item.style.display = "flex"; // Ako sadrži, prikazuje stavku
       } else {
-        item.style.display = "none";
+        item.style.display = "none"; // Ako ne sadrži, sakriva stavku
       }
     }
   });
