@@ -64,21 +64,40 @@ function getItemsFromStorage() {
   }
   return itemsFromStorage;
 }
-
-function removeItem(e) {
-  // Proverava da li je element na koji je kliknuto (e.target) unutar elementa sa klasom "remove-item"
+// ['sdf', 'sdf']
+function onClickItem(e) {
   if (e.target.parentElement.classList.contains('remove-item')) {
-    // Ako jeste, uklanja roditeljski element roditeljskog elementa (što je <li> element) sa liste
-    if (confirm('Are you sure?')) {
-      e.target.parentElement.parentElement.remove();
-      checkUI();
-    }
+    removeItem(e.target.parentElement.parentElement);
   }
+}
+
+function removeItem(item) {
+  if (confirm('Are you sure?')) {
+    // Remove item from DOM
+    item.remove();
+
+    // Remove item from storage
+    removeItemFromStorage(item.textContent);
+    checkUI();
+  }
+}
+
+function removeItemFromStorage(item) {
+  let itemsFromStorage = getItemsFromStorage();
+
+  // Filter out item to be removed
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+
+  // Re-set localstorage
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 function clearAllItems(e) {
   // Postavlja unutrašnji HTML elementa itemList na prazan string, što uklanja sve stavke sa liste
   itemList.innerHTML = '';
+
+  // Clear from localStorage
+  localStorage.removeItem('items');
   checkUI();
 }
 
@@ -111,7 +130,7 @@ function filterItems(e) {
 function init() {
   // Dodaj event listener
   itemForm.addEventListener('submit', onAddItemSubmit);
-  itemList.addEventListener('click', removeItem);
+  itemList.addEventListener('click', onClickItem);
   clearBtn.addEventListener('click', clearAllItems);
   filter.addEventListener('input', filterItems);
   document.addEventListener('DOMContentLoaded', displayItemsFromStorage);
