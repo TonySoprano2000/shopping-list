@@ -2,6 +2,8 @@ const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
+const formBtn = itemForm.querySelector('button');
+let isEditMode = false;
 
 const filter = document.getElementById('filter');
 function displayItemsFromStorage() {
@@ -16,6 +18,20 @@ function onAddItemSubmit(e) {
     alert('Please add item');
     return;
   }
+  // Chack for edit mode
+  if (isEditMode) {
+    const itemToEdit = itemList.querySelector('.edit-mode');
+    removeItemFromStorage(itemToEdit.textContent);
+    itemToEdit.classList.remove('edit-mode');
+    itemToEdit.remove();
+    isEditMode = false;
+  } else {
+    if (checkIfItemExists(newItem)) {
+      alert('That item already exists');
+      return;
+    }
+  }
+
   // Create item DOM element
   addItemToDom(newItem);
   //
@@ -64,10 +80,50 @@ function getItemsFromStorage() {
   }
   return itemsFromStorage;
 }
-// ['sdf', 'sdf']
+
 function onClickItem(e) {
   if (e.target.parentElement.classList.contains('remove-item')) {
     removeItem(e.target.parentElement.parentElement);
+  } else {
+    setItemToEdit(e.target);
+  }
+
+  function checkIfItemExists(item) {
+    const itemsFromStorage = getItemsFromStorage();
+    if (itemsFromStorage.includes(item)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function setItemToEdit(item) {
+    isEditMode = true;
+    // Ukloni klasu edit-mode sa svih item-a
+    itemList
+      .querySelectorAll('li')
+      .forEach((i) => i.classList.remove('edit-mode'));
+
+    // Dodaj klasu edit-mode trenutnom item-u
+    item.classList.add('edit-mode');
+
+    // Promeni boju trenutnog item-a
+    item.style.color = '#ccc';
+
+    // Promeni tekst dugmeta na "Update Item"
+    formBtn.textContent = 'Update Item';
+    formBtn.style.backgroundColor = '#228B22';
+
+    // Postavi tekst trenutnog item-a u input polje
+    itemInput.value = item.textContent;
+  }
+}
+function checkIfItemExists(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  if (itemsFromStorage.includes(item)) {
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -102,6 +158,7 @@ function clearAllItems(e) {
 }
 
 function checkUI() {
+  itemInput.value = '';
   const items = itemList.querySelectorAll('li');
   if (items.length === 0) {
     clearBtn.style.display = 'none';
@@ -110,6 +167,9 @@ function checkUI() {
     clearBtn.style.display = 'block';
     filter.style.display = 'block';
   }
+  formBtn.textContent = 'Add item';
+  formBtn.style.backgroundColor = '#333';
+  isEditMode = false;
 }
 
 function filterItems(e) {
